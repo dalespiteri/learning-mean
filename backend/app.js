@@ -1,7 +1,19 @@
 const express = require('express');
 const bodyParser = require("body-parser");
+const mongoose = require('mongoose');
+
+const Post = require('./models/post');
 
 const app = express();
+
+mongoose.connect('mongodb+srv://dale:fUeR51v5zRmDDp09@cluster0-dldtt.mongodb.net/node-angular?retryWrites=true')
+.then(() => {
+  console.log('Cennected to DB');
+})
+.catch(() => {
+  console.log('Connection to DB Failed');
+});
+
 
 app.use(bodyParser.json());
 
@@ -13,29 +25,24 @@ app.use((req, res, next) => {
 });
 
 app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content,
+  });
   console.log(post);
+  post.save();
   res.status(201).json({
     message: 'Post added successfully'
   });
 });
 
 app.get('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: 'adfasf9079',
-      title: 'First server post',
-      content: 'this is coming from the server'
-    },
-    {
-      id: '6fads15fda165',
-      title: 'Second server post',
-      content: 'this is coming from the server as well'
-    },
-  ];
-  res.status(200).json({
-    message: 'Posts fetched successfully',
-    posts: posts
+  Post.find().then(documents => {
+    console.log(documents);
+    res.status(200).json({
+      message: 'Posts fetched successfully',
+      posts: documents
+    });
   });
 });
 
