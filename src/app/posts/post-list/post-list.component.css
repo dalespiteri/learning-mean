@@ -10,3 +10,7 @@
 mat-spinner {
   margin: auto;
 }
+
+.post-image, .post-image img {
+  width: 100%;
+}
